@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>City Of Life</title>
+<style>
+:root{--ink:#352f43;--muted:#777087;--cream:#fffaf2;--pink:#ffb8c7;--purple:#9b8be8;--mint:#a8e3cf;--gold:#ffd98a}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f8e9ef,#e9e8ff 55%,#dff5ec);font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;color:var(--ink);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:10px 14px;background:#eee9ff;color:var(--ink);font-weight:750;transition:.15s}button:hover{transform:translateY(-1px);filter:brightness(.98)}button.primary{background:var(--ink);color:white}button.selected{outline:3px solid #a99bf4;background:#e6e0ff}button:focus-visible,input:focus-visible{outline:3px solid #6d5bd0}
+header{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1180px;margin:auto}header .logo{font-weight:950;letter-spacing:.04em;font-size:clamp(20px,3vw,30px)}header .logo span{color:#8976d9}.tag{font-size:12px;color:#6e667e;background:#ffffffa8;padding:7px 11px;border-radius:99px}
+main{max-width:1180px;margin:0 auto;padding:0 18px 28px}.screen{display:none}.screen.active{display:block}
+.panel{background:#ffffffd9;border:1px solid #fff;border-radius:24px;box-shadow:0 18px 50px #65558c16;padding:clamp(16px,3vw,28px)}
+h1{font-size:clamp(27px,4vw,42px);line-height:1.12;margin:8px 0 10px}h2{margin:0 0 8px;font-size:21px}p{color:var(--muted);line-height:1.55}.eyebrow{font-size:12px;font-weight:900;letter-spacing:.13em;color:#8976d9}
+.creator{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(320px,1.3fr);gap:18px;align-items:stretch}.preview{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:510px;background:linear-gradient(155deg,#f8e7f0,#e6e1ff 62%,#dff5ed);position:relative;overflow:hidden}.preview:before,.preview:after{content:"";position:absolute;border-radius:50%;background:#ffffff60;width:220px;height:220px;top:-70px;right:-70px}.preview:after{width:150px;height:150px;top:auto;right:auto;bottom:-60px;left:-30px}
+.avatar{position:relative;width:220px;height:315px;display:flex;align-items:center;flex-direction:column;z-index:1;filter:drop-shadow(0 10px 8px #59456b1b)}
+.avatar .hair-back{position:absolute;top:28px;width:126px;height:128px;border-radius:58px 58px 42px 42px;background:var(--hair);z-index:0}
+.avatar .head{position:absolute;top:36px;width:104px;height:120px;border-radius:46% 46% 43% 43%;background:var(--skin);z-index:2;box-shadow:inset -7px -3px #00000008}
+.avatar .ear{position:absolute;top:86px;width:18px;height:28px;border-radius:50%;background:var(--skin);z-index:1}.ear.l{left:47px}.ear.r{right:47px}
+.avatar .hair-front{position:absolute;top:28px;width:126px;height:56px;border-radius:60px 60px 22px 16px;background:var(--hair);z-index:3;clip-path:polygon(0 0,100% 0,100% 70%,76% 100%,60% 67%,45% 100%,29% 70%,0 85%)}
+.avatar .eyes{position:absolute;top:83px;left:27px;right:27px;display:flex;justify-content:space-between;z-index:4}.eye{width:9px;height:13px;border-radius:50%;background:#403349;position:relative}.eye:after{content:"";position:absolute;width:3px;height:4px;border-radius:50%;background:white;top:2px;left:2px}
+.avatar .blush{position:absolute;top:103px;left:13px;right:13px;display:flex;justify-content:space-between;z-index:4}.blush i{width:17px;height:8px;border-radius:50%;background:#f58b9b80}
+.avatar .mouth{position:absolute;top:112px;width:17px;height:8px;border-bottom:2px solid #9e5968;border-radius:50%;z-index:4}
+.avatar .neck{position:absolute;top:143px;width:31px;height:31px;background:var(--skin);z-index:1}
+.avatar .body{position:absolute;top:160px;width:133px;height:112px;border-radius:40px 40px 18px 18px;background:var(--outfit);z-index:2}
+.avatar .body:after{content:"";position:absolute;top:0;left:52px;width:28px;height:44px;background:#ffffff35;clip-path:polygon(0 0,100% 0,50% 100%)}
+.avatar .legs{position:absolute;top:258px;display:flex;gap:13px;z-index:1}.avatar .legs i{display:block;width:36px;height:54px;border-radius:9px 9px 12px 12px;background:var(--pants)}
+.avatar .shoes{position:absolute;top:300px;display:flex;gap:9px;z-index:3}.avatar .shoes i{width:40px;height:15px;border-radius:9px;background:#fff}
+.preview-name{z-index:2;margin-top:15px;font-size:21px;font-weight:900}.preview-sub{z-index:2;color:#716780;font-size:13px}
+.controls{display:flex;flex-direction:column;gap:15px}.field label,.section-label{display:block;font-weight:850;font-size:13px;margin-bottom:7px}.field input{width:100%;border:1px solid #e2dceb;border-radius:12px;padding:12px;background:#fff;color:var(--ink)}
+.custom-group{border-bottom:1px solid #eee8f4;padding-bottom:13px}.custom-group:last-of-type{border-bottom:0}.options{display:flex;flex-wrap:wrap;gap:8px}.swatch{width:35px;height:35px;border-radius:12px;padding:0;border:3px solid white;box-shadow:0 0 0 1px #dcd4e8}.swatch.selected{box-shadow:0 0 0 3px #8976d9}.choice{padding:8px 12px;background:#f5f1fb;border:1px solid transparent}.small-note{font-size:12px;color:#898197;margin:6px 0 0}.creator-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px}
+.game-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}.city{min-height:410px;background:linear-gradient(#c9e9f5 0 46%,#9cd4b7 46%);position:relative;overflow:hidden;border-radius:20px;padding:18px}.sun{position:absolute;right:30px;top:25px;width:60px;height:60px;border-radius:50%;background:#ffe6a0}.building{position:absolute;bottom:100px;width:105px;background:#f9c6c4;border:4px solid #fff4dc;border-bottom:0;box-shadow:5px 6px #6c7f7d25}.building:before{content:"";position:absolute;top:25px;left:14px;width:18px;height:24px;background:#b6dff1;box-shadow:38px 0 #b6dff1,0 43px #b6dff1,38px 43px #b6dff1}.b1{height:180px;left:12%}.b2{height:140px;left:38%;background:#d8c8f8}.b3{height:205px;right:8%;background:#f6d88f}.road{position:absolute;bottom:0;left:0;right:0;height:85px;background:#b6b5c4;border-top:8px solid #e7e3d8}.road:after{content:"";position:absolute;left:0;right:0;top:35px;border-top:4px dashed #fff8d8}.game-avatar{position:absolute;bottom:50px;left:48%;font-size:46px;filter:drop-shadow(0 5px 3px #4444)}.city-caption{position:absolute;top:17px;left:18px;font-weight:900;background:#ffffffc9;padding:8px 12px;border-radius:12px}.stats{display:grid;gap:12px;margin:15px 0}.stat{display:grid;grid-template-columns:75px 1fr 38px;gap:8px;align-items:center;font-size:13px;font-weight:800}.bar{height:12px;border-radius:99px;background:#eee8f5;overflow:hidden}.bar i{display:block;height:100%;width:70%;border-radius:99px;background:linear-gradient(90deg,#a8e3cf,#8b82e8);transition:width .3s}.activity{background:#f7f3fc;padding:12px;border-radius:14px;margin-top:12px;font-size:13px;line-height:1.5}.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.action-grid button{background:#f3efff;text-align:left}.action-grid button span{display:block;font-size:11px;color:#817891;font-weight:500;margin-top:3px}.footer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+@media(max-width:760px){.creator,.game-grid{grid-template-columns:1fr}.preview{min-height:420px}.controls{gap:12px}.avatar{transform:scale(.88);transform-origin:center top;margin-bottom:-30px}.city{min-height:350px}header{padding:14px}}
+</style>
+</head>
+<body>
+<header><div class="logo">CITY <span>OF LIFE</span></div><div class="tag">나만의 인생 시뮬레이션 ✦</div></header>
+<main>
+<section id="create" class="screen active">
+<div class="creator">
+<div class="panel preview">
+<div class="eyebrow">YOUR NEW STORY</div>
+<div class="avatar" id="avatar" style="--skin:#f4c9a8;--hair:#5a3b35;--outfit:#a99be8;--pants:#77749b">
+<div class="hair-back"></div><div class="ear l"></div><div class="ear r"></div><div class="head"></div><div class="hair-front"></div>
+<div class="eyes"><i class="eye"></i><i class="eye"></i></div><div class="blush"><i></i><i></i></div><div class="mouth"></div><div class="neck"></div><div class="body"></div><div class="legs"><i></i><i></i></div><div class="shoes"><i></i><i></i></div>
+</div>
+<div id="previewName" class="preview-name">새로운 주민</div><div id="previewSub" class="preview-sub">느긋한 탐험가 · 새 출발</div>
+</div>
+<div class="panel">
+<div class="eyebrow">CHARACTER CREATOR</div><h1>어떤 삶을<br>시작해 볼까요?</h1><p>외모와 성격을 정하고, 나만의 이름으로 도시 생활을 시작하세요.</p>
+<div class="controls">
+<div class="field"><label for="name">캐릭터 이름</label><input id="name" maxlength="16" value="새로운 주민" placeholder="이름을 입력하세요"></div>
+<div class="custom-group"><div class="section-label">얼굴 · 피부색</div><div class="options" id="skinOptions"></div></div>
+<div class="custom-group"><div class="section-label">헤어스타일</div><div class="options" id="hairStyleOptions"></div><div class="section-label" style="margin-top:10px">머리 색상</div><div class="options" id="hairOptions"></div></div>
+<div class="custom-group"><div class="section-label">체형</div><div class="options" id="bodyOptions"></div></div>
+<div class="custom-group"><div class="section-label">의상 색상</div><div class="options" id="outfitOptions"></div></div>
+<div class="custom-group"><div class="section-label">성격</div><div class="options" id="personalityOptions"></div><p class="small-note" id="personalityHint">성격에 따라 하루의 시작 보너스가 달라집니다.</p></div>
+</div>
+<div class="creator-actions"><span class="small-note">설정은 게임 안에서도 바꿀 수 있어요.</span><button class="primary" id="startBtn">이 모습으로 시작하기 →</button></div>
+</div>
+</div>
+</section>
+<section id="game" class="screen">
+<div class="panel" style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><div class="eyebrow">WELCOME TO THE CITY</div><h1 id="welcome" style="margin:5px 0">반가워요!</h1><div id="dayLabel" class="small-note">1일 차 · 오전 9:00</div></div><button id="editBtn">캐릭터 다시 꾸미기</button></div>
+<div class="game-grid">
+<div class="panel"><div class="city"><div class="sun"></div><div class="building b1"></div><div class="building b2"></div><div class="building b3"></div><div class="road"></div><div class="game-avatar" id="gameAvatar">🧑🏻</div><div class="city-caption">🌷 포근한 도심 거리</div></div><div class="activity" id="story">새로운 도시에서 첫날을 맞이했어요. 오늘은 무엇을 해볼까요?</div></div>
+<div class="panel"><h2>오늘의 컨디션</h2><p style="margin-top:0">하고 싶은 일을 선택해 보세요.</p><div class="stats">
+<div class="stat"><span>🍎 허기</span><div class="bar"><i id="hungerBar"></i></div><span id="hungerNum">75</span></div>
+<div class="stat"><span>⚡ 에너지</span><div class="bar"><i id="energyBar"></i></div><span id="energyNum">80</span></div>
+<div class="stat"><span>😊 행복</span><div class="bar"><i id="happyBar"></i></div><span id="happyNum">70</span></div>
+<div class="stat"><span>🫧 청결</span><div class="bar"><i id="cleanBar"></i></div><span id="cleanNum">80</span></div></div>
+<h2 style="margin-top:22px">무엇을 할까요?</h2><div class="action-grid">
+<button data-action="eat">🍜 식사하기<span>허기를 채워요</span></button><button data-action="sleep">🛏️ 낮잠 자기<span>에너지를 회복해요</span></button><button data-action="walk">🌳 산책하기<span>기분 전환을 해요</span></button><button data-action="shower">🚿 샤워하기<span>깔끔하게 정돈해요</span></button><button data-action="work">💼 아르바이트<span>생활비를 벌어요</span></button><button data-action="friend">💬 이웃과 대화<span>관계를 쌓아요</span></button></div>
+<div class="activity"><b>💰 소지금</b> <span id="money">₩50,000</span><br><span class="small-note">행동을 할 때마다 시간이 흐릅니다.</span></div>
+<div class="footer-actions"><button id="saveBtn">💾 저장하기</button><button id="resetBtn">↺ 새 게임</button></div>
+</div>
+</div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const options={
+skin:[['밝은 피부','#f4c9a8'],['복숭아빛','#eeb58e'],['따뜻한 피부','#c98962'],['깊은 피부','#8a563f']],
+hair:[['초콜릿','#5a3b35'],['검정','#282632'],['밤하늘','#514b7d'],['코랄','#c96e68'],['금빛','#d6aa5d'],['민트','#68a99b']],
+hairStyle:[['단발','short'],['긴 머리','long'],['곱슬','curly'],['묶은 머리','tied']],
+body:[['슬림','slim'],['보통','normal'],['통통','round']],
+outfit:[['라벤더','#a99be8'],['하늘색','#88c8e8'],['코랄','#f29ca8'],['민트','#84cdb5'],['노랑','#f1cc73'],['남색','#646b9b']],
+personality:[['느긋함','느긋한 탐험가'],['활발함','활기찬 도전자'],['다정함','다정한 친구'],['야망 있음','꿈꾸는 야심가']]
+};
+const state={name:'새로운 주민',skin:'#f4c9a8',hair:'#5a3b35',hairStyle:'short',body:'normal',outfit:'#a99be8',personality:'느긋한 탐험가',hunger:75,energy:80,happy:70,clean:80,money:50000,day:1,hour:9};
+function optionButtons(id,items,key,swatch=false){const root=$(id);root.innerHTML='';items.forEach(([label,value])=>{const b=document.createElement('button');b.className=(state[key]===value?'selected ':'')+(swatch?'swatch':'choice');b.title=label;if(swatch)b.style.background=value;else b.textContent=label;b.addEventListener('click',()=>{state[key]=value;optionButtons(id,items,key,swatch);updateAvatar();});root.appendChild(b);});}
+optionButtons('skinOptions',options.skin,'skin',true);optionButtons('hairOptions',options.hair,'hair',true);optionButtons('hairStyleOptions',options.hairStyle,'hairStyle');optionButtons('bodyOptions',options.body,'body');optionButtons('outfitOptions',options.outfit,'outfit',true);optionButtons('personalityOptions',options.personality,'personality');
+function updateAvatar(){const a=$('avatar');a.style.setProperty('--skin',state.skin);a.style.setProperty('--hair',state.hair);a.style.setProperty('--outfit',state.outfit);a.style.setProperty('--pants',state.outfit==='#646b9b'?'#42445f':'#77749b');a.querySelector('.hair-back').style.height=state.hairStyle==='short'?'92px':state.hairStyle==='long'?'155px':state.hairStyle==='curly'?'135px':'110px';a.querySelector('.hair-back').style.borderRadius=state.hairStyle==='curly'?'48%':'58px 58px 42px 42px';a.querySelector('.hair-front').style.height=state.hairStyle==='curly'?'72px':'56px';a.querySelector('.body').style.width=state.body==='slim'?'112px':state.body==='round'?'153px':'133px';a.querySelector('.body').style.borderRadius=state.body==='round'?'48px 48px 25px 25px':'40px 40px 18px 18px';$('previewName').textContent=$('name').value.trim()||'새로운 주민';$('previewSub').textContent=state.personality+' · 새 출발';$('personalityHint').textContent=({'느긋한 탐험가':'느긋한 성격: 행복이 조금 더 높은 상태로 시작합니다.','활기찬 도전자':'활발한 성격: 에너지가 조금 더 높은 상태로 시작합니다.','다정한 친구':'다정한 성격: 이웃과 대화하면 행복이 더 많이 올라갑니다.','꿈꾸는 야심가':'야심 있는 성격: 아르바이트 보상을 조금 더 받습니다.'})[state.personality];}
+$('name').addEventListener('input',updateAvatar);
+function showScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(name).classList.add('active');}
+function renderStats(){[['hunger','hunger'],['energy','energy'],['happy','happy'],['clean','clean']].forEach(([key,id])=>{$(key+'Bar').style.width=state[key]+'%';$(key+'Num').textContent=state[key];});$('money').textContent='₩'+state.money.toLocaleString('ko-KR');$('dayLabel').textContent=state.day+'일 차 · '+String(state.hour).padStart(2,'0')+':00';}
+function startGame(){state.name=$('name').value.trim()||'새로운 주민';if(state.personality==='느긋한 탐험가')state.happy=Math.min(100,state.happy+10);if(state.personality==='활기찬 도전자')state.energy=Math.min(100,state.energy+10);$('welcome').textContent='반가워요, '+state.name+'님!';$('gameAvatar').textContent='🧑🏻';$('gameAvatar').style.filter='drop-shadow(0 5px 3px #4444)';showScreen('game');renderStats();$('story').textContent=state.name+'님만의 도시 생활이 시작됐어요. 작은 일부터 하나씩 해봐요!';}
+$('startBtn').addEventListener('click',startGame);$('editBtn').addEventListener('click',()=>showScreen('create'));
+const actions={
+eat:()=>{state.hunger=Math.min(100,state.hunger+28);state.money=Math.max(0,state.money-5000);return '따뜻한 식사를 했어요. 배가 든든해지고 기분도 조금 좋아졌어요. (₩5,000)';},
+sleep:()=>{state.energy=Math.min(100,state.energy+35);state.hunger=Math.max(0,state.hunger-8);return '잠깐 눈을 붙였어요. 몸과 마음이 한결 가벼워졌어요.';},
+walk:()=>{state.happy=Math.min(100,state.happy+18);state.energy=Math.max(0,state.energy-10);state.hunger=Math.max(0,state.hunger-5);return '꽃이 핀 거리를 산책했어요. 새로운 풍경 덕분에 행복해졌어요.';},
+shower:()=>{state.clean=100;state.energy=Math.max(0,state.energy-4);return '상쾌하게 샤워했어요. 하루를 다시 시작할 수 있을 것 같아요.';},
+work:()=>{let pay=15000+(state.personality==='꿈꾸는 야심가'?5000:0);state.money+=pay;state.energy=Math.max(0,state.energy-18);state.hunger=Math.max(0,state.hunger-12);state.happy=Math.max(0,state.happy-3);return '오늘 아르바이트를 마쳤어요! ₩'+pay.toLocaleString('ko-KR')+'을 벌었어요.';},
+friend:()=>{state.happy=Math.min(100,state.happy+(state.personality==='다정한 친구'?25:17));state.energy=Math.max(0,state.energy-5);return '이웃과 이런저런 이야기를 나눴어요. 다음에는 함께 차를 마시기로 했어요.';}
+};
+document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>{const text=actions[b.dataset.action]();state.hour+=1;if(state.hour>=24){state.hour=0;state.day++;}if(b.dataset.action!=='sleep'){state.energy=Math.max(0,state.energy-2);state.hunger=Math.max(0,state.hunger-2);}state.clean=Math.max(0,state.clean-1);$('story').textContent=text;renderStats();}));
+$('saveBtn').addEventListener('click',()=>{try{localStorage.setItem('cityOfLifeSave',JSON.stringify(state));$('story').textContent='저장했어요! 같은 브라우저에서 새로 열어도 진행 상황을 불러올 수 있어요.';}catch(e){$('story').textContent='이 브라우저에서는 저장할 수 없어요. 현재 화면을 유지해 주세요.';}});
+$('resetBtn').addEventListener('click',()=>{if(confirm('현재 진행 상황을 초기화하고 새 게임을 시작할까요?')){location.reload();}});
+updateAvatar();
+try{const saved=localStorage.getItem('cityOfLifeSave');if(saved){const data=JSON.parse(saved);if(data&&data.name){const loadBtn=document.createElement('button');loadBtn.textContent='💾 저장된 게임 불러오기';loadBtn.style.marginTop='8px';loadBtn.addEventListener('click',()=>{Object.assign(state,data);$('name').value=state.name;updateAvatar();startGame();$('story').textContent='저장된 게임을 불러왔어요. 다시 이어서 생활해 보세요!';});document.querySelector('.creator-actions').prepend(loadBtn);}}}catch(e){}
+</script>
+</body>
+</html>
